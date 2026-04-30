@@ -1,5 +1,6 @@
 #include "discovery.hpp"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 
@@ -23,9 +24,34 @@ namespace mg {
 
 namespace {
 
+// Maximum allowed byte length for a single TXT key or value (DNS limit).
+constexpr size_t kMaxTxtFieldBytes  = 255;
+// Maximum number of TXT entries stored per record.
+constexpr size_t kMaxTxtEntries     = 32;
+// Maximum length for any single string field stored in a DeviceRecord.
+constexpr size_t kMaxFieldBytes     = 512;
+
+/** Remove non-printable ASCII characters (< 0x20 or == 0x7f) from s. */
+std::string strip_controls(std::string s)
+{
+  s.erase(std::remove_if(s.begin(), s.end(),
+      [](unsigned char c) { return c < 0x20 || c == 0x7f; }),
+      s.end());
+  return s;
+}
+
+/** Sanitize and truncate a string field. */
+std::string sanitize_field(const std::string &raw, size_t max_len = kMaxFieldBytes)
+{
+  std::string s = strip_controls(raw);
+  if (s.size() > max_len)
+    s.resize(max_len);
+  return s;
+}
+
 std::string make_device_id(const mdnscpp::BrowseResult &r)
 {
-  return r.getFullname() + "#" + std::to_string(r.getInterface());
+  return sanitize_field(r.getFullname()) + "#" + std::to_string(r.getInterface());
 }
 
 std::map<std::string, std::string> txt_to_map(const mdnscpp::BrowseResult &r)
@@ -33,10 +59,18 @@ std::map<std::string, std::string> txt_to_map(const mdnscpp::BrowseResult &r)
   std::map<std::string, std::string> m;
   for (const auto &t : r.getTxtRecords())
   {
+    if (m.size() >= kMaxTxtEntries)
+      break;
+    std::string key = strip_controls(t.key);
+    if (key.size() > kMaxTxtFieldBytes) key.resize(kMaxTxtFieldBytes);
+
+    std::string val;
     if (t.value.has_value())
-      m[t.key] = *t.value;
-    else
-      m[t.key] = "";
+    {
+      val = strip_controls(*t.value);
+      if (val.size() > kMaxTxtFieldBytes) val.resize(kMaxTxtFieldBytes);
+    }
+    m[std::move(key)] = std::move(val);
   }
   return m;
 }
@@ -63,9 +97,9 @@ void DiscoveryCache::syncFromBrowseResults(const std::vector<mdnscpp::BrowseResu
     DeviceRecord d;
     d.id = id;
     d.service = "_oca._tcp";
-    d.domain = r.getDomain().empty() ? std::string("local") : r.getDomain();
-    d.name = r.getName();
-    d.host = r.getHostname();
+    d.domain = sanitize_field(r.getDomain().empty() ? std::string("local") : r.getDomain());
+    d.name = sanitize_field(r.getName());
+    d.host = sanitize_field(r.getHostname());
     if (!r.getAddress().empty())
       d.addresses.push_back(r.getAddress());
     d.port = r.getPort();

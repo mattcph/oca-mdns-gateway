@@ -3,7 +3,10 @@
 #include <httplib.h>
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <mutex>
 
 #include "discovery.hpp"
 #include "util.hpp"
@@ -12,12 +15,70 @@ namespace mg {
 
 namespace {
 
+class GlobalTokenBucket {
+public:
+  GlobalTokenBucket(double capacity, double refill_per_second)
+      : capacity_(capacity), refill_per_second_(refill_per_second), tokens_(capacity),
+        last_refill_(std::chrono::steady_clock::now())
+  {
+  }
+
+  bool consume(double amount = 1.0)
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    refill_locked();
+    if (tokens_ < amount)
+      return false;
+    tokens_ -= amount;
+    return true;
+  }
+
+  int retry_after_seconds(double amount = 1.0)
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    refill_locked();
+    if (tokens_ >= amount)
+      return 0;
+    const double deficit = amount - tokens_;
+    if (refill_per_second_ <= 0.0)
+      return 1;
+    const auto wait = static_cast<int>(std::ceil(deficit / refill_per_second_));
+    return wait > 0 ? wait : 1;
+  }
+
+private:
+  void refill_locked()
+  {
+    const auto now = std::chrono::steady_clock::now();
+    const auto elapsed = std::chrono::duration<double>(now - last_refill_).count();
+    if (elapsed > 0.0)
+    {
+      tokens_ = std::min(capacity_, tokens_ + elapsed * refill_per_second_);
+      last_refill_ = now;
+    }
+  }
+
+  const double capacity_;
+  const double refill_per_second_;
+  double tokens_;
+  std::chrono::steady_clock::time_point last_refill_;
+  std::mutex mutex_;
+};
+
 bool token_ok(const HttpServeOptions &opts, const httplib::Request &req)
 {
   if (!opts.bearer_token.has_value())
     return true;
   const auto want = std::string("Bearer ") + *opts.bearer_token;
-  return req.get_header_value("Authorization") == want;
+  const auto &have = req.get_header_value("Authorization");
+  // Constant-time comparison: avoid short-circuit leaking token length/value
+  // via timing side-channel even on loopback.
+  if (have.size() != want.size())
+    return false;
+  bool ok = true;
+  for (size_t i = 0; i < want.size(); ++i)
+    ok &= (have[i] == want[i]);
+  return ok;
 }
 
 nlohmann::json diagnostics_json(const HttpServeOptions &opts,
@@ -71,12 +132,28 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
   svr.set_payload_max_length(65536);
 
   const auto started = std::chrono::steady_clock::now();
+  // Lightweight global limiter for this local API process.
+  // Burst: 20 requests. Refill: 5 requests per second.
+  GlobalTokenBucket limiter(20.0, 5.0);
+  auto check_rate_limit = [&](httplib::Response &res) -> bool {
+    if (limiter.consume())
+      return true;
+    const int retry_after = limiter.retry_after_seconds();
+    res.status = 429;
+    res.set_header("Retry-After", std::to_string(retry_after));
+    res.set_content(R"({"error":"rate_limited"})", "application/json");
+    return false;
+  };
 
-  svr.Get("/health", [](const httplib::Request &, httplib::Response &res) {
+  svr.Get("/health", [&](const httplib::Request &, httplib::Response &res) {
+    if (!check_rate_limit(res))
+      return;
     res.set_content(R"({"ok":true})", "application/json");
   });
 
   svr.Get("/v1/service", [&](const httplib::Request &req, httplib::Response &res) {
+    if (!check_rate_limit(res))
+      return;
     if (!token_ok(opts, req))
     {
       res.status = 401;
@@ -92,6 +169,8 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
   });
 
   svr.Get("/v1/devices", [&](const httplib::Request &req, httplib::Response &res) {
+    if (!check_rate_limit(res))
+      return;
     if (!token_ok(opts, req))
     {
       res.status = 401;
@@ -104,6 +183,8 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
   });
 
   svr.Get("/v1/browse", [&](const httplib::Request &req, httplib::Response &res) {
+    if (!check_rate_limit(res))
+      return;
     if (!token_ok(opts, req))
     {
       res.status = 401;
@@ -116,6 +197,8 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
   });
 
   svr.Get("/v1/diagnostics", [&](const httplib::Request &req, httplib::Response &res) {
+    if (!check_rate_limit(res))
+      return;
     if (!token_ok(opts, req))
     {
       res.status = 401;
@@ -124,6 +207,24 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
     }
     res.set_content(diagnostics_json(opts, cache, started).dump(), "application/json");
   });
+
+  svr.set_error_handler([](const httplib::Request &, httplib::Response &res) {
+    if (res.status == 404)
+    {
+      res.set_content(R"({"error":"not_found"})", "application/json");
+    }
+  });
+
+  // Reject non-GET methods explicitly with 405 + Allow header.
+  auto method_not_allowed = [](const httplib::Request &, httplib::Response &res) {
+    res.status = 405;
+    res.set_header("Allow", "GET");
+    res.set_content(R"({"error":"method_not_allowed"})", "application/json");
+  };
+  svr.Post(".*", method_not_allowed);
+  svr.Put(".*", method_not_allowed);
+  svr.Delete(".*", method_not_allowed);
+  svr.Patch(".*", method_not_allowed);
 
   if (!svr.listen(opts.bind_host, opts.port))
   {

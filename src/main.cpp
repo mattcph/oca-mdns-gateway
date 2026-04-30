@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <optional>
@@ -22,7 +23,21 @@ void print_usage()
       << "  mdns-gateway serve [--bind 127.0.0.1] [--port N] [--token SECRET]\n"
       << "  mdns-gateway browse [--json]\n"
       << "  mdns-gateway status [--host 127.0.0.1] [--port N] [--token SECRET]\n"
-      << "  mdns-gateway diagnostics [--host 127.0.0.1] [--port N] [--token SECRET]\n";
+      << "  mdns-gateway diagnostics [--host 127.0.0.1] [--port N] [--token SECRET]\n"
+      << "\nToken:\n"
+      << "  Set MDNS_GATEWAY_TOKEN env var to avoid exposing the secret in process\n"
+      << "  listings and shell history. --token overrides the env var when both are set.\n";
+}
+
+/** Read token: --token arg takes precedence over MDNS_GATEWAY_TOKEN env var. */
+std::optional<std::string> resolve_token(const std::optional<std::string> &cli_override)
+{
+  if (cli_override.has_value())
+    return cli_override;
+  const char *env = std::getenv("MDNS_GATEWAY_TOKEN");
+  if (env && env[0] != '\0')
+    return std::string(env);
+  return std::nullopt;
 }
 
 bool parse_cli_kv(int argc, char **argv, int &i, const char *key, std::string &out)
@@ -56,6 +71,11 @@ bool parse_cli_kv_int(int argc, char **argv, int &i, const char *key, int &out)
     std::cerr << "invalid integer for " << key << "\n";
     std::exit(2);
   }
+  if (std::strcmp(key, "--port") == 0 && (out < 1024 || out > 65535))
+  {
+    std::cerr << "--port must be in range 1024-65535 (got " << out << ")\n";
+    std::exit(2);
+  }
   return true;
 }
 
@@ -85,6 +105,8 @@ int cmd_serve(int argc, char **argv)
     std::cerr << "serve: --bind must be 127.0.0.1\n";
     return 2;
   }
+
+  opts.bearer_token = resolve_token(opts.bearer_token);
 
   mg::DiscoveryCache cache;
   std::thread mdns([&]() { mg::run_discovery_forever(cache); });

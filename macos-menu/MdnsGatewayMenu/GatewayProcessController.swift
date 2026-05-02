@@ -140,12 +140,13 @@ final class GatewayProcessController: ObservableObject {
                 }
             }
             if let logURL, let out = try? FileHandle(forWritingTo: logURL) {
-                try? out.seekToEnd()
+                _ = try? out.seekToEnd()
                 if let d = chunk.data(using: .utf8) {
-                    try? out.write(contentsOf: d)
+                    _ = try? out.write(contentsOf: d)
                 }
-                try? out.close()
+                _ = try? out.close()
             }
         }
     }
 }
+

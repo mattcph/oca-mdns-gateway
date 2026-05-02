@@ -11,11 +11,16 @@ enum LaunchAtLogin {
     /// Whether launch-at-login is on or awaiting user approval in System Settings.
     static var isEnabled: Bool {
         switch SMAppService.mainApp.status {
-        case .enabled, .requiresApproval:
+        case .enabled:
+            return true
+        case .requiresApproval:
             return true
         case .notRegistered:
             return false
+        case .notFound:
+            return false
         @unknown default:
+            // Be conservative for any future cases we don't explicitly handle.
             return false
         }
     }
@@ -33,3 +38,4 @@ enum LaunchAtLogin {
         }
     }
 }
+

@@ -102,6 +102,10 @@ curl -s http://127.0.0.1:17670/health
 curl -s http://127.0.0.1:17670/v1/devices
 ```
 
+## macOS menu-bar launcher
+
+Optional Xcode app under [`macos-menu/`](macos-menu/README.md): starts/stops the built `mdns-gateway` binary from the menu bar with configurable bind address, port, and bearer token.
+
 ## Windows
 
 Use the same CMake steps with MSVC. mdnscpp uses the Win32 DNS-SD backend; libuv may be fetched or installed separately depending on your environment.

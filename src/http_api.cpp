@@ -124,7 +124,7 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
 {
   if (!is_allowed_bind_host(opts.bind_host))
   {
-    std::cerr << "mdns-gateway: bind host must be 127.0.0.1 (loopback IPv4 only)\n";
+    std::cerr << "oca-mdns-gateway: bind host must be 127.0.0.1 (loopback IPv4 only)\n";
     std::exit(2);
   }
 
@@ -228,7 +228,7 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
 
   if (!svr.listen(opts.bind_host, opts.port))
   {
-    std::cerr << "mdns-gateway: failed to listen on " << opts.bind_host << ":" << opts.port << "\n";
+    std::cerr << "oca-mdns-gateway: failed to listen on " << opts.bind_host << ":" << opts.port << "\n";
     std::exit(1);
   }
 }

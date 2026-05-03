@@ -1,12 +1,7 @@
-//
-//  MdnsGatewayMenuApp.swift
-//  MdnsGatewayMenu
-//
-
 import SwiftUI
 
 @main
-struct MdnsGatewayMenuApp: App {
+struct OCAMDNSGatewayApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {

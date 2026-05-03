@@ -1,8 +1,3 @@
-//
-//  StatusMenuController.swift
-//  MdnsGatewayMenu
-//
-
 import AppKit
 import Combine
 
@@ -53,15 +48,15 @@ final class StatusMenuController: NSObject {
         let s = GatewaySettings.load()
         let port = s.port
         if gateway.isRunning {
-            button.toolTip = "mdns-gateway — running on \(s.bindHost):\(port)"
+            button.toolTip = "OCA mDNS Gateway — running on \(s.bindHost):\(port)"
         } else {
-            button.toolTip = "mdns-gateway — stopped (configured \(s.bindHost):\(port))"
+            button.toolTip = "OCA mDNS Gateway — stopped (configured \(s.bindHost):\(port))"
         }
     }
 
     private static func symbolImage(systemName: String) -> NSImage? {
         let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .regular)
-        return NSImage(systemSymbolName: systemName, accessibilityDescription: "mdns-gateway")?
+        return NSImage(systemSymbolName: systemName, accessibilityDescription: "OCA mDNS Gateway")?
             .withSymbolConfiguration(config)
     }
 
@@ -120,7 +115,7 @@ final class StatusMenuController: NSObject {
         guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return
         }
-        let dir = appSupport.appendingPathComponent("MdnsGatewayMenu/Logs", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("\(GatewaySettings.applicationSupportFolderName)/Logs", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         NSWorkspace.shared.open(dir)
     }

@@ -1,6 +1,6 @@
-# Locked third-party revisions
+# OCA mDNS Gateway — locked third-party revisions
 
-Dependencies live as **Git submodules** under [`third_party/`](third_party/). After `git submodule update --init --recursive`, CMake uses these paths directly (no FetchContent for these libraries).
+Dependencies for the **OCA mDNS Gateway** project (`oca-mdns-gateway`) live as **Git submodules** under [`third_party/`](third_party/). After `git submodule update --init --recursive`, CMake uses these paths directly (no FetchContent for these libraries).
 
 | Submodule | Repository | Pinned ref | Commit |
 |-----------|------------|------------|--------|

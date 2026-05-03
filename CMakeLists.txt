@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(mdns-gateway VERSION 0.1.0 LANGUAGES CXX)
+project(oca-mdns-gateway VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -29,7 +29,7 @@ set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
 set(JSON_Install OFF CACHE BOOL "" FORCE)
 add_subdirectory(third_party/json EXCLUDE_FROM_ALL)
 
-add_executable(mdns-gateway
+add_executable(oca-mdns-gateway
   src/main.cpp
   src/discovery.hpp
   src/discovery.cpp
@@ -39,9 +39,9 @@ add_executable(mdns-gateway
   src/util.cpp
 )
 
-target_include_directories(mdns-gateway PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(oca-mdns-gateway PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-target_link_libraries(mdns-gateway
+target_link_libraries(oca-mdns-gateway
   PRIVATE
     libmdnscpp
     httplib::httplib
@@ -49,9 +49,9 @@ target_link_libraries(mdns-gateway
 )
 
 if(APPLE)
-  target_compile_definitions(mdns-gateway PRIVATE MDNS_GATEWAY_BACKEND_BONJOUR=1)
+  target_compile_definitions(oca-mdns-gateway PRIVATE MDNS_GATEWAY_BACKEND_BONJOUR=1)
 elseif(WIN32)
-  target_compile_definitions(mdns-gateway PRIVATE MDNS_GATEWAY_BACKEND_WIN32=1)
+  target_compile_definitions(oca-mdns-gateway PRIVATE MDNS_GATEWAY_BACKEND_WIN32=1)
 else()
-  target_compile_definitions(mdns-gateway PRIVATE MDNS_GATEWAY_BACKEND_AVAHI=1)
+  target_compile_definitions(oca-mdns-gateway PRIVATE MDNS_GATEWAY_BACKEND_AVAHI=1)
 endif()

@@ -1,8 +1,3 @@
-//
-//  GatewaySettings.swift
-//  MdnsGatewayMenu
-//
-
 import Foundation
 
 struct GatewaySettings: Codable, Equatable {
@@ -13,7 +8,10 @@ struct GatewaySettings: Codable, Equatable {
 
     static let `default` = GatewaySettings(bindHost: "127.0.0.1", port: 17_670, bearerToken: nil)
 
-    private static let userDefaultsKey = "MdnsGatewayMenu.settings"
+    /// Subdirectory under `~/Library/Application Support/` (logs, etc.).
+    static let applicationSupportFolderName = "OCA-mDNS-Gateway"
+
+    private static let userDefaultsKey = "OCA-mDNS-Gateway.settings"
 
     static func load() -> GatewaySettings {
         guard let data = UserDefaults.standard.data(forKey: userDefaultsKey) else {

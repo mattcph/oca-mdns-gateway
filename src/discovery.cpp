@@ -191,7 +191,7 @@ void browse_oca_for(std::chrono::seconds duration, DiscoveryCache &cache)
   while (std::chrono::steady_clock::now() < end)
     poll.runOnce();
 #else
-#  error "mdns-gateway: unsupported mdnscpp event loop configuration"
+#  error "oca-mdns-gateway: unsupported mdnscpp event loop configuration"
 #endif
 }
 

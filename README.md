@@ -1,14 +1,14 @@
-# mdns-gateway
+# OCA mDNS Gateway
 
-Local discovery broker for `**_oca._tcp**` (AES70/OCA over DNS-SD/mDNS). It continuously browses the LAN via [mdnscpp](https://github.com/arneg/mdnscpp) (Git submodule) and exposes a **loopback-only** JSON HTTP API ([cpp-httplib](https://github.com/yhirose/cpp-httplib), submodule) for clients on the same machine.
+**OCA mDNS Gateway** is a local discovery broker for **`_oca._tcp`** (AES70/OCA over DNS-SD/mDNS). This repository (`oca-mdns-gateway`) continuously browses the LAN via [mdnscpp](https://github.com/arneg/mdnscpp) (Git submodule) and exposes a **loopback-only** JSON HTTP API ([cpp-httplib](https://github.com/yhirose/cpp-httplib), submodule) for clients on the same machine.
 
 ## Getting the sources
 
 This repo uses **Git submodules** under `third_party/`. Clone with submodules:
 
 ```bash
-git clone --recurse-submodules git@github.com:mattcph/mdns-gateway.git
-cd mdns-gateway
+git clone --recurse-submodules git@github.com:mattcph/oca-mdns-gateway.git
+cd oca-mdns-gateway
 ```
 
 If you already cloned without submodules:
@@ -51,22 +51,22 @@ cmake -B build -DMDNSCPP_ROOT=/path/to/other/mdnscpp
 ## Build
 
 ```bash
-cd mdns-gateway
+cd oca-mdns-gateway
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j4
 ```
 
-Binary: `build/mdns-gateway`
+Built CLI binary: `build/oca-mdns-gateway`
 
 ## Commands
 
 
 | Command                    | Purpose                                                           |
 | -------------------------- | ----------------------------------------------------------------- |
-| `mdns-gateway serve`       | Run background `_oca._tcp` browse + HTTP API on `127.0.0.1:17670` |
-| `mdns-gateway browse`      | One-shot browse (~10s), text or `--json`                          |
-| `mdns-gateway status`      | `GET /v1/service` against the local API                           |
-| `mdns-gateway diagnostics` | `GET /v1/diagnostics`                                             |
+| `oca-mdns-gateway serve`       | Run background `_oca._tcp` browse + HTTP API on `127.0.0.1:17670` |
+| `oca-mdns-gateway browse`      | One-shot browse (~10s), text or `--json`                          |
+| `oca-mdns-gateway status`      | `GET /v1/service` against the local API                           |
+| `oca-mdns-gateway diagnostics` | `GET /v1/diagnostics`                                             |
 
 
 ### `serve` options
@@ -97,14 +97,14 @@ Normalized device fields match the v1 plan (`id`, `service`, `domain`, `name`, `
 ## Example
 
 ```bash
-./build/mdns-gateway serve --bind 127.0.0.1 --port 17670 &
+./build/oca-mdns-gateway serve --bind 127.0.0.1 --port 17670 &
 curl -s http://127.0.0.1:17670/health
 curl -s http://127.0.0.1:17670/v1/devices
 ```
 
 ## macOS menu-bar launcher
 
-Optional Xcode app under [`macos-menu/`](macos-menu/README.md): starts/stops the built `mdns-gateway` binary from the menu bar with configurable bind address, port, and bearer token.
+Optional **OCA mDNS Gateway** Xcode app under [`macos-menu/`](macos-menu/README.md): starts/stops the broker CLI (`oca-mdns-gateway`) from the menu bar with configurable bind address, port, and bearer token.
 
 ## Windows
 

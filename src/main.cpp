@@ -18,12 +18,12 @@ namespace {
 void print_usage()
 {
   std::cerr
-      << "mdns-gateway — local `_oca._tcp` discovery broker (loopback HTTP API)\n\n"
+      << "oca-mdns-gateway — local `_oca._tcp` discovery broker (loopback HTTP API)\n\n"
       << "Usage:\n"
-      << "  mdns-gateway serve [--bind 127.0.0.1] [--port N] [--token SECRET]\n"
-      << "  mdns-gateway browse [--json]\n"
-      << "  mdns-gateway status [--host 127.0.0.1] [--port N] [--token SECRET]\n"
-      << "  mdns-gateway diagnostics [--host 127.0.0.1] [--port N] [--token SECRET]\n"
+      << "  oca-mdns-gateway serve [--bind 127.0.0.1] [--port N] [--token SECRET]\n"
+      << "  oca-mdns-gateway browse [--json]\n"
+      << "  oca-mdns-gateway status [--host 127.0.0.1] [--port N] [--token SECRET]\n"
+      << "  oca-mdns-gateway diagnostics [--host 127.0.0.1] [--port N] [--token SECRET]\n"
       << "\nToken:\n"
       << "  Set MDNS_GATEWAY_TOKEN env var to avoid exposing the secret in process\n"
       << "  listings and shell history. --token overrides the env var when both are set.\n";
@@ -166,7 +166,7 @@ int http_get_print(const std::string &host, int port, const std::string &path,
   const auto r = headers.empty() ? cli.Get(path.c_str()) : cli.Get(path.c_str(), headers);
   if (!r)
   {
-    std::cerr << "request failed (is `mdns-gateway serve` running?)\n";
+    std::cerr << "request failed (is `oca-mdns-gateway serve` running?)\n";
     return 1;
   }
   std::cout << r->body;

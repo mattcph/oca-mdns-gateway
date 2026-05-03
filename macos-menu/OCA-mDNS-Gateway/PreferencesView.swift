@@ -1,8 +1,3 @@
-//
-//  PreferencesView.swift
-//  MdnsGatewayMenu
-//
-
 import AppKit
 import SwiftUI
 

@@ -1,8 +1,3 @@
-//
-//  PreferencesWindowController.swift
-//  MdnsGatewayMenu
-//
-
 import AppKit
 import SwiftUI
 
@@ -26,7 +21,7 @@ final class PreferencesWindowController {
             backing: .buffered,
             defer: false
         )
-        win.title = "mdns-gateway"
+        win.title = "OCA mDNS Gateway"
         win.contentView = host
         win.center()
         win.isReleasedWhenClosed = false

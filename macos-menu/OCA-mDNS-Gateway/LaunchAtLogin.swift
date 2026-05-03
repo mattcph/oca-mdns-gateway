@@ -1,8 +1,3 @@
-//
-//  LaunchAtLogin.swift
-//  MdnsGatewayMenu
-//
-
 import Foundation
 import ServiceManagement
 

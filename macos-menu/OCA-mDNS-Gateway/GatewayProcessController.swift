@@ -1,8 +1,3 @@
-//
-//  GatewayProcessController.swift
-//  MdnsGatewayMenu
-//
-
 import Combine
 import Darwin
 import Foundation
@@ -35,8 +30,8 @@ final class GatewayProcessController: ObservableObject {
             return "Gateway is already running."
         }
 
-        guard let exe = Bundle.main.url(forAuxiliaryExecutable: "mdns-gateway") else {
-            return "Bundled mdns-gateway not found. Build the C++ project (cmake) so the Run Script can copy the binary into the app bundle."
+        guard let exe = Bundle.main.url(forAuxiliaryExecutable: "oca-mdns-gateway") else {
+            return "Bundled oca-mdns-gateway helper not found. Build the C++ project (cmake) so the Run Script can copy the binary into the app bundle."
         }
 
         let bind = settings.bindHost.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -121,10 +116,10 @@ final class GatewayProcessController: ObservableObject {
         guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
-        let dir = appSupport.appendingPathComponent("MdnsGatewayMenu/Logs", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("\(GatewaySettings.applicationSupportFolderName)/Logs", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let stamp = ISO8601DateFormatter().string(from: Date())
-        return dir.appendingPathComponent("mdns-gateway-\(stamp).log")
+        return dir.appendingPathComponent("oca-mdns-gateway-\(stamp).log")
     }
 
     private func captureOutput(pipe: Pipe, logURL: URL?) {

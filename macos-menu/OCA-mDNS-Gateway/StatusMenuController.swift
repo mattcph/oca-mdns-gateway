@@ -77,15 +77,13 @@ final class StatusMenuController: NSObject {
 
     private func rebuildMenu() {
         menu.removeAllItems()
-        let running = gateway.isRunning
-
-        let start = menu.addItem(withTitle: "Start OCA mDNS Gateway", action: #selector(startGateway), keyEquivalent: "")
-        start.target = self
-        start.isEnabled = !running
-
-        let stop = menu.addItem(withTitle: "Stop OCA mDNS Gateway", action: #selector(stopGateway), keyEquivalent: "")
-        stop.target = self
-        stop.isEnabled = running
+        if gateway.isRunning {
+            let stop = menu.addItem(withTitle: "Stop OCA mDNS Gateway", action: #selector(stopGateway), keyEquivalent: "")
+            stop.target = self
+        } else {
+            let start = menu.addItem(withTitle: "Start OCA mDNS Gateway", action: #selector(startGateway), keyEquivalent: "")
+            start.target = self
+        }
 
         menu.addItem(.separator())
 

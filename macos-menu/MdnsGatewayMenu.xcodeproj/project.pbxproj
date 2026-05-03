@@ -15,6 +15,7 @@
 		A00000000000000000000406 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000106 /* PreferencesWindowController.swift */; };
 		A00000000000000000000407 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000107 /* PreferencesView.swift */; };
 		A00000000000000000000408 /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000108 /* LaunchAtLogin.swift */; };
+		FD44FDAA2FA763B200717506 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD44FDA92FA763B200717506 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		A00000000000000000000107 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		A00000000000000000000108 /* LaunchAtLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLogin.swift; sourceTree = "<group>"; };
 		A00000000000000000000110 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FD44FDA92FA763B200717506 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +46,7 @@
 		A00000000000000000000003 = {
 			isa = PBXGroup;
 			children = (
+				FD44FDA92FA763B200717506 /* Assets.xcassets */,
 				A00000000000000000000005 /* MdnsGatewayMenu */,
 				A00000000000000000000004 /* Products */,
 			);
@@ -132,6 +135,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD44FDAA2FA763B200717506 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

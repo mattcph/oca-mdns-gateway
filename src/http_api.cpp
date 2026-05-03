@@ -111,7 +111,7 @@ nlohmann::json diagnostics_json(const HttpServeOptions &opts,
   j["interfaces"] = std::move(ifs);
 
   nlohmann::json hints = nlohmann::json::array();
-  hints.push_back("Empty device list may mean no `_oca._tcp` advertisers, multicast blocked, wrong VLAN, Wi‑Fi isolation, or VPN interference.");
+  hints.push_back("Empty device list may mean no `_oca._tcp` advertisers, multicast blocked, wrong VLAN, WiFi isolation, or VPN interference.");
   j["hints"] = std::move(hints);
 
   (void)cache;

@@ -303,7 +303,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mdnsgateway.MdnsGatewayMenu;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mdnsgateway.oca;
 				PRODUCT_NAME = "OCA mDNS Gateway";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -325,7 +325,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mdnsgateway.MdnsGatewayMenu;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mdnsgateway.oca;
 				PRODUCT_NAME = "OCA mDNS Gateway";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

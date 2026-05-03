@@ -23,16 +23,20 @@ cmake --build build -j
 
 Open `macos-menu/OCA mDNS Gateway.xcodeproj` in Xcode and run the **OCA mDNS Gateway** scheme.
 
-The Run Script phase (**Embed oca-mdns-gateway**) copies `../build/oca-mdns-gateway` into `Contents/MacOS/oca-mdns-gateway`. The Xcode build **fails** if that file is missing—build the C++ project first.
+The Run Script phase (**Embed oca-mdns-gateway**) copies `../build/oca-mdns-gateway` into `Contents/MacOS/oca-mdns-gateway`. The Xcode build **fails** if that file is missing. Build the C++ project first.
 
 At runtime the app resolves the helper with `Bundle.main.url(forAuxiliaryExecutable: "oca-mdns-gateway")`.
 
 ### Command-line build
 
+Use the `**OCA mDNS Gateway`** scheme (matches the app/target name). 
+
 ```bash
 cd macos-menu
 xcodebuild -scheme "OCA mDNS Gateway" -configuration Release -destination 'platform=macOS' build
 ```
+
+Run `**xcodebuild -list -project "OCA mDNS Gateway.xcodeproj"**` to see schemes.
 
 ## Sandbox
 

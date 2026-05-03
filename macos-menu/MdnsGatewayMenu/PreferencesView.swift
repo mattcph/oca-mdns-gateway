@@ -25,7 +25,7 @@ struct PreferencesView: View {
             Section {
                 Toggle("Launch at login", isOn: launchAtLoginBinding)
                 if LaunchAtLogin.needsUserApproval {
-                    Text("Approve MdnsGatewayMenu under System Settings › General › Login Items (or Privacy & Security).")
+                    Text("Approve OCA mDNS Gateway under System Settings › General › Login Items (or Privacy & Security).")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

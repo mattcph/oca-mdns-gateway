@@ -84,11 +84,11 @@ final class StatusMenuController: NSObject {
         menu.removeAllItems()
         let running = gateway.isRunning
 
-        let start = menu.addItem(withTitle: "Start Gateway", action: #selector(startGateway), keyEquivalent: "")
+        let start = menu.addItem(withTitle: "Start OCA mDNS Gateway", action: #selector(startGateway), keyEquivalent: "")
         start.target = self
         start.isEnabled = !running
 
-        let stop = menu.addItem(withTitle: "Stop Gateway", action: #selector(stopGateway), keyEquivalent: "")
+        let stop = menu.addItem(withTitle: "Stop OCA mDNS Gateway", action: #selector(stopGateway), keyEquivalent: "")
         stop.target = self
         stop.isEnabled = running
 
@@ -135,7 +135,7 @@ final class StatusMenuController: NSObject {
 
     private func alert(message: String) {
         let a = NSAlert()
-        a.messageText = "mdns-gateway"
+        a.messageText = "OCA mDNS Gateway"
         a.informativeText = message
         a.alertStyle = .warning
         a.addButton(withTitle: "OK")

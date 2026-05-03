@@ -34,17 +34,14 @@ final class GatewayProcessController: ObservableObject {
             return "Bundled oca-mdns-gateway helper not found. Build the C++ project (cmake) so the Run Script can copy the binary into the app bundle."
         }
 
-        let bind = settings.bindHost.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !bind.isEmpty else {
-            return "Bind address cannot be empty."
-        }
-
         guard (1024 ... 65_535).contains(settings.port) else {
             return "Port must be between 1024 and 65535."
         }
 
         let p = Process()
         p.executableURL = exe
+        // Always loopback; the bundled binary rejects any other --bind.
+        let bind = "127.0.0.1"
         p.arguments = [
             "serve",
             "--bind", bind,

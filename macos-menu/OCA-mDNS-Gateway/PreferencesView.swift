@@ -2,21 +2,16 @@ import AppKit
 import SwiftUI
 
 struct PreferencesView: View {
-    @State private var bindHost: String
-    @State private var port: String
-    @State private var token: String
-    @State private var launchAtLogin: Bool
-
-    init() {
-        let s = GatewaySettings.load()
-        _bindHost = State(initialValue: s.bindHost)
-        _port = State(initialValue: String(s.port))
-        _token = State(initialValue: s.bearerToken ?? "")
-        _launchAtLogin = State(initialValue: LaunchAtLogin.isEnabled)
-    }
+    @ObservedObject var viewModel: PreferencesViewModel
 
     var body: some View {
         Form {
+            Section {
+                Text("The HTTP API listens only on this Mac at 127.0.0.1 (not reachable from other machines).")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             Section {
                 Toggle("Launch at login", isOn: launchAtLoginBinding)
                 if LaunchAtLogin.needsUserApproval {
@@ -26,11 +21,13 @@ struct PreferencesView: View {
                 }
             }
             Section {
-                TextField("Bind address:", text: $bindHost)
-                TextField("HTTP port:", text: $port)
+                TextField("HTTP port:", text: $viewModel.port)
+                Text("Use a port between 1024 and 65535. If the gateway is running, stop and start it for changes to apply.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             Section {
-                SecureField("Bearer token (optional, blank = none):", text: $token)
+                SecureField("Bearer token (optional, blank = none):", text: $viewModel.token)
                 Text("Token is passed via MDNS_GATEWAY_TOKEN when non-empty.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -38,22 +35,21 @@ struct PreferencesView: View {
         }
         .formStyle(.grouped)
         .padding()
-        .frame(minWidth: 440, minHeight: 280)
+        .frame(minWidth: 440, minHeight: 300)
         .onAppear {
-            launchAtLogin = LaunchAtLogin.isEnabled
+            viewModel.launchAtLogin = LaunchAtLogin.isEnabled
         }
-        .onDisappear(perform: save)
     }
 
     private var launchAtLoginBinding: Binding<Bool> {
         Binding(
-            get: { launchAtLogin },
+            get: { viewModel.launchAtLogin },
             set: { newValue in
                 do {
                     try LaunchAtLogin.setEnabled(newValue)
-                    launchAtLogin = LaunchAtLogin.isEnabled
+                    viewModel.launchAtLogin = LaunchAtLogin.isEnabled
                 } catch {
-                    launchAtLogin = LaunchAtLogin.isEnabled
+                    viewModel.launchAtLogin = LaunchAtLogin.isEnabled
                     let alert = NSAlert()
                     alert.messageText = "Launch at login"
                     alert.informativeText = error.localizedDescription
@@ -63,18 +59,5 @@ struct PreferencesView: View {
                 }
             }
         )
-    }
-
-    private func save() {
-        let trimmedBind = bindHost.trimmingCharacters(in: .whitespacesAndNewlines)
-        let bind = trimmedBind.isEmpty ? GatewaySettings.default.bindHost : trimmedBind
-        let portInt = Int(port.trimmingCharacters(in: .whitespacesAndNewlines)) ?? GatewaySettings.default.port
-        let trimmedToken = token.trimmingCharacters(in: .whitespacesAndNewlines)
-        let s = GatewaySettings(
-            bindHost: bind,
-            port: portInt,
-            bearerToken: trimmedToken.isEmpty ? nil : trimmedToken
-        )
-        s.save()
     }
 }

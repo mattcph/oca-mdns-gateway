@@ -5,10 +5,11 @@ final class StatusMenuController: NSObject {
     private let statusItem: NSStatusItem
     private let menu: NSMenu
     private let gateway = GatewayProcessController.shared
-    private let preferences = PreferencesWindowController()
+    private let preferences: PreferencesWindowController
     private var cancellables = Set<AnyCancellable>()
 
-    override init() {
+    init(preferences: PreferencesWindowController) {
+        self.preferences = preferences
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         menu = NSMenu()
         super.init()

@@ -14,18 +14,25 @@ struct GatewaySettings: Codable, Equatable {
     private static let userDefaultsKey = "OCA-mDNS-Gateway.settings"
 
     static func load() -> GatewaySettings {
+        let decoded: GatewaySettings
         guard let data = UserDefaults.standard.data(forKey: userDefaultsKey) else {
             return .default
         }
         do {
-            return try JSONDecoder().decode(GatewaySettings.self, from: data)
+            decoded = try JSONDecoder().decode(GatewaySettings.self, from: data)
         } catch {
             return .default
         }
+        // Daemon only accepts loopback IPv4; normalize older saved values.
+        var s = decoded
+        s.bindHost = "127.0.0.1"
+        return s
     }
 
     func save() {
-        guard let data = try? JSONEncoder().encode(self) else { return }
+        var copy = self
+        copy.bindHost = "127.0.0.1"
+        guard let data = try? JSONEncoder().encode(copy) else { return }
         UserDefaults.standard.set(data, forKey: Self.userDefaultsKey)
     }
 }

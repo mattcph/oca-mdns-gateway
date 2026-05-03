@@ -1,6 +1,7 @@
 import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private let preferencesController = PreferencesWindowController()
     private var menuController: StatusMenuController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -8,7 +9,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         NSApp.setActivationPolicy(.accessory)
-        menuController = StatusMenuController()
+        menuController = StatusMenuController(preferences: preferencesController)
+    }
+
+    @objc func openPreferences() {
+        preferencesController.show()
     }
 
     /// Quit if another process with this bundle ID is already running; otherwise false so startup continues.

@@ -1,8 +1,12 @@
 # OCA mDNS Gateway
 
-macOS menu-bar (accessory) app for **OCA mDNS Gateway**. It starts and stops the HTTP discovery broker subprocess (CLI executable `oca-mdns-gateway`; broker overview in [main README](../README.md)). Settings (**bind address**, **port**, optional **bearer token**) are stored in UserDefaults. When the token is non-empty it is passed via `MDNS_GATEWAY_TOKEN` (not via `ps`-visible argv).
+macOS menu-bar (accessory) app for **OCA mDNS Gateway**. It starts and stops the HTTP discovery broker service (CLI executable `oca-mdns-gateway`; broker overview in [main README](../README.md)) through `launchctl` as a user LaunchAgent. Settings (**bind address**, **port**, optional **bearer token**) are stored in UserDefaults. When the token is non-empty it is passed via `MDNS_GATEWAY_TOKEN` in the generated LaunchAgent plist.
 
 **Launch at login** uses `ServiceManagement` (`SMAppService.mainApp`). macOS may require you to approve **OCA mDNS Gateway** under **System Settings › General › Login Items** (or **Privacy & Security**) before it actually launches at login. Use a properly signed build for predictable behavior.
+
+### Preferences
+
+Port and token are saved when you **close** the Preferences window (`windowWillClose`). If the gateway is already running and you change port or token, **Stop** from the menu, close Preferences (to persist), then **Start** again so the LaunchAgent plist picks up the new values.
 
 ## Requirements
 
@@ -27,6 +31,12 @@ The Run Script phase (**Embed oca-mdns-gateway**) copies `../build/oca-mdns-gate
 
 At runtime the app resolves the helper with `Bundle.main.url(forAuxiliaryExecutable: "oca-mdns-gateway")`.
 
+The menu app writes `~/Library/LaunchAgents/de.deuso.ocamdnsgateway.service.plist` and controls it via:
+- `launchctl bootstrap` + `launchctl kickstart -k` on Start
+- `launchctl bootout` on Stop
+
+This enforces a single launchd-owned runtime for menu control.
+
 ### Command-line build
 
 Use the `**OCA mDNS Gateway`** scheme (matches the app/target name). 
@@ -48,4 +58,20 @@ The **OCA mDNS Gateway** target sets **`CODE_SIGN_ENTITLEMENTS`** to [`OCA-mDNS-
 
 ## Logs
 
-Gateway stdout/stderr are appended to timestamped files under `~/Library/Application Support/OCA-mDNS-Gateway/Logs/` (filenames like `oca-mdns-gateway-*.log`). The menu item **Open Logs Folder…** reveals this directory.
+Launchd-managed gateway stdout/stderr are appended to:
+
+`~/Library/Application Support/OCA-mDNS-Gateway/Logs/oca-mdns-gateway-launchd.log`
+
+When logs should be written:
+- A launchd log file is created before Start.
+- Output is written while the launchd-managed helper runs.
+- Stop/start cycles continue writing to the same launchd log path.
+
+When the active log exceeds **1 MiB**, the next **Start** from the menu (after `launchctl bootout`) moves it to `oca-mdns-gateway-launchd.log.1`, overwriting any previous `.1`, then starts a new empty `oca-mdns-gateway-launchd.log`.
+
+The menu item **Open Logs Folder…** reveals this directory.
+
+## Mixed launch behavior
+
+- Menu **Start/Stop** controls the launchd-managed service.
+- If another external `serve` process already owns the configured port, menu Start reports an external-process status instead of spawning competing processes.

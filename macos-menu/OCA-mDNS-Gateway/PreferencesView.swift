@@ -22,7 +22,7 @@ struct PreferencesView: View {
             }
             Section {
                 TextField("HTTP port:", text: $viewModel.port)
-                Text("Use a port between 1024 and 65535. If the gateway is running, stop and start it for changes to apply.")
+                Text("Ports 1024-65535. Changes save when you close this window. If the gateway is already running, stop it from the menu, close Preferences, then Start again so port and token apply.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

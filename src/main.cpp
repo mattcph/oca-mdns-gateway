@@ -18,7 +18,7 @@ namespace {
 void print_usage()
 {
   std::cerr
-      << "oca-mdns-gateway — local `_oca._tcp` discovery broker (loopback HTTP API)\n\n"
+      << "oca-mdns-gateway local `_oca._tcp` discovery broker (loopback HTTP API)\n\n"
       << "Usage:\n"
       << "  oca-mdns-gateway serve [--bind 127.0.0.1] [--port N] [--token SECRET]\n"
       << "  oca-mdns-gateway browse [--json]\n"
@@ -26,7 +26,10 @@ void print_usage()
       << "  oca-mdns-gateway diagnostics [--host 127.0.0.1] [--port N] [--token SECRET]\n"
       << "\nToken:\n"
       << "  Set MDNS_GATEWAY_TOKEN env var to avoid exposing the secret in process\n"
-      << "  listings and shell history. --token overrides the env var when both are set.\n";
+      << "  listings and shell history. --token overrides the env var when both are set.\n"
+      << "\nmacOS menu app note:\n"
+      << "  The menu app controls a launchd-managed service. Use `serve` manually only for\n"
+      << "  explicit terminal/debug sessions, not alongside the menu-controlled runtime.\n";
 }
 
 /** Read token: --token arg takes precedence over MDNS_GATEWAY_TOKEN env var. */

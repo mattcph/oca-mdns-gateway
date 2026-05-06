@@ -92,6 +92,8 @@ make clean
 - `--port N` (default `17670`)
 - `--token SECRET` — if set, `/v1/*` requires header `Authorization: Bearer SECRET` (`/health` stays open)
 
+Process exit codes for `serve`: **`4`** if the HTTP server cannot bind/listen (for example port already in use); **`2`** for invalid CLI usage or disallowed `--bind`; other fatal errors may exit **`1`**.
+
 ### `status` / `diagnostics` options
 
 - `--host`, `--port` — API location (default `127.0.0.1` / `17670`)
@@ -121,7 +123,9 @@ curl -s http://127.0.0.1:17670/v1/devices
 
 ## macOS menu-bar launcher
 
-Optional **OCA mDNS Gateway** Xcode app under [`macos-menu/`](macos-menu/README.md): starts and stops the bundled broker CLI (`oca-mdns-gateway`) from the menu bar. Preferences cover **HTTP port**, optional **bearer token**, and **launch at login**; the API stays **loopback-only** (`127.0.0.1`). Details and a plain `xcodebuild` recipe are in that README.
+Optional **OCA mDNS Gateway** Xcode app under [`macos-menu/`](macos-menu/README.md): controls a **launchd-managed** bundled broker service (`oca-mdns-gateway`) from the menu bar. Preferences cover **HTTP port**, optional **bearer token**, and **launch at login**; the API stays **loopback-only** (`127.0.0.1`). Details and a plain `xcodebuild` recipe are in that README.
+
+For normal macOS usage, use the menu app Start/Stop path (single launchd owner). Use `oca-mdns-gateway serve` manually only for explicit terminal/debug sessions.
 
 Build everything from the repo root with `make all` (see **Build → One-command build** above).
 

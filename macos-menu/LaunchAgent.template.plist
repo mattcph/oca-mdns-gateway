@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>de.deuso.ocamdnsgateway.service</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/path/to/OCA mDNS Gateway.app/Contents/MacOS/oca-mdns-gateway</string>
+		<string>serve</string>
+		<string>--bind</string>
+		<string>127.0.0.1</string>
+		<string>--port</string>
+		<string>17670</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>KeepAlive</key>
+	<false/>
+	<key>WorkingDirectory</key>
+	<string>/Users/username</string>
+	<key>StandardOutPath</key>
+	<string>/Users/username/Library/Application Support/OCA-mDNS-Gateway/Logs/oca-mdns-gateway-launchd.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/username/Library/Application Support/OCA-mDNS-Gateway/Logs/oca-mdns-gateway-launchd.log</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+</dict>
+</plist>

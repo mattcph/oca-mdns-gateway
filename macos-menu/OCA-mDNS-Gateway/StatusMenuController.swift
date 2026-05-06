@@ -49,9 +49,12 @@ final class StatusMenuController: NSObject {
         let s = GatewaySettings.load()
         let port = s.port
         if gateway.isRunning {
-            button.toolTip = "OCA mDNS Gateway — running on \(s.bindHost):\(port)"
+            let owner = gateway.isLaunchdManaged ? "GUI" : "Command Line"
+            let status = gateway.lastMessage.isEmpty ? "" : "\n\(gateway.lastMessage)"
+            button.toolTip = "OCA mDNS Gateway: \(s.bindHost):\(port) (\(owner))\(status)"
         } else {
-            button.toolTip = "OCA mDNS Gateway — stopped (configured \(s.bindHost):\(port))"
+            let status = gateway.lastMessage.isEmpty ? "" : "\n\(gateway.lastMessage)"
+            button.toolTip = "OCA mDNS Gateway: \(s.bindHost):\(port)\(status)"
         }
     }
 

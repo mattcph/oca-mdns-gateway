@@ -229,7 +229,7 @@ void run_http_server(const HttpServeOptions &opts, DiscoveryCache &cache)
   if (!svr.listen(opts.bind_host, opts.port))
   {
     std::cerr << "oca-mdns-gateway: failed to listen on " << opts.bind_host << ":" << opts.port << "\n";
-    std::exit(1);
+    std::exit(4); // bind/listen failure (e.g. port in use); distinct from generic fatal exit(1)
   }
 }
 

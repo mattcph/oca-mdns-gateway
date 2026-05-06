@@ -12,6 +12,8 @@ set(MDNSCPP_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/mdnscpp"
 if(NOT EXISTS "${MDNSCPP_ROOT}/CMakeLists.txt")
   message(FATAL_ERROR "mdnscpp not found at '${MDNSCPP_ROOT}'. Clone with submodules: git submodule update --init --recursive")
 endif()
+# Avoid linking helper against Homebrew/system libuv dylib. Let mdnscpp fetch static libuv.
+set(CMAKE_DISABLE_FIND_PACKAGE_libuv ON CACHE BOOL "Disable system libuv package lookup" FORCE)
 add_subdirectory("${MDNSCPP_ROOT}" "${CMAKE_BINARY_DIR}/_deps/mdnscpp-build")
 
 # ---------------------------------------------------------------------------

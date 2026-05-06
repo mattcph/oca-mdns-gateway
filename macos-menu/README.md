@@ -42,6 +42,10 @@ Run `**xcodebuild -list -project "OCA mDNS Gateway.xcodeproj"**` to see schemes.
 
 The target is **not** App Sandbox–enabled by default. Enabling sandbox would require entitlements for the bundled helper to bind a local port and possibly network access; for a local developer utility, leaving sandbox off is typical.
 
+## Code signing entitlements
+
+The **OCA mDNS Gateway** target sets **`CODE_SIGN_ENTITLEMENTS`** to [`OCA-mDNS-Gateway/entitlements.plist`](OCA-mDNS-Gateway/entitlements.plist). Xcode uses it during the Code Sign phase (equivalent to passing `--entitlements` to `codesign`).
+
 ## Logs
 
 Gateway stdout/stderr are appended to timestamped files under `~/Library/Application Support/OCA-mDNS-Gateway/Logs/` (filenames like `oca-mdns-gateway-*.log`). The menu item **Open Logs Folder…** reveals this directory.
